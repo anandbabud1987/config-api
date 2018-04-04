@@ -23,4 +23,9 @@ public class ConfigUtil {
 		return new ResponseEntity<Object>(object, HttpStatus.OK);
 	}
 
+	public static boolean isValidInputData(String appCode, String version) {
+		
+		return (appCode!=null && version!=null);
+	}
+
 }

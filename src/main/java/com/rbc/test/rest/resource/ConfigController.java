@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rbc.test.constants.ExceptionMessage;
+import com.rbc.test.constants.MessageContants;
+import com.rbc.test.model.Config;
 import com.rbc.test.rest.contracts.ConfigRequest;
 import com.rbc.test.rest.contracts.ConfigResponse;
 import com.rbc.test.rest.exception.ApiException;
@@ -49,9 +51,13 @@ public class ConfigController {
 		ConfigResponse response=null;
 		try {
 			response=new ConfigResponse();
-			response.setAppCode(appCode);
-			response.setVersion(version);
-			configService.saveConfig();
+			if(ConfigUtil.isValidInputData(appCode,version)) {//To Validate whether input has valid path parameters or not
+				response=configService.saveConfig(appCode,version);
+			}
+			else {
+				response.setStatus(HttpStatus.BAD_REQUEST.toString());
+				response.setError(MessageContants.INPUTS_MISSING);
+			}
 		}
 		catch(Exception exception) {
 			logger.error("Exception occurred in ConfigController:getConfig:",exception.getCause());
