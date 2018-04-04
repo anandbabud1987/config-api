@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +28,12 @@ public class ConfigService {
 	 * To Save/Update Config JSON Document
 	 * @param config
 	 */
-	public ConfigResponse saveConfig(String appCode,String version) {
+	public ConfigResponse saveConfig(String appCode,String version,String jsonPayLoad) {
 		Config config=new Config();
 		config.setAppCode(appCode);
 		config.setVersion(version);
 		config.setLastModifiedDates(new Date());
+		config.setContent(jsonPayLoad);
 		return populateResponse(configRepository.save(config));
 	}
 	
