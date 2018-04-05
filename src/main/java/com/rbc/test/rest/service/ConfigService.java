@@ -45,6 +45,7 @@ public class ConfigService {
 		ConfigResponse response=new ConfigResponse();
 		response.setAppCode(config.getAppCode());
 		response.setVersion(config.getVersion());
+		response.setLastModifiedDate(config.getLastModifiedDates().toString());
 		response.setStatus(MessageContants.SUCCESS);
 		response.setError("");
 		return response;

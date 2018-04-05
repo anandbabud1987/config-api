@@ -6,6 +6,7 @@
  */
 package com.rbc.test.rest.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -100,6 +101,7 @@ public class ConfigController {
 					if(config!=null) {
 						response.setAppCode(String.valueOf(config.getAppCode()));
 						response.setVersion(String.valueOf(config.getVersion()));
+						response.setDocument(String.valueOf(config.getContent()));
 					}
 				}
 				else {
@@ -129,36 +131,26 @@ public class ConfigController {
 	public ResponseEntity<Object> getConfigAll(
 			@PathVariable(name="appCode") String appCode) throws ApiException{
 		logger.info("getConfigAll started.");
-		ConfigResponse response=null;
+		 List<ConfigResponse> responseList=null;
+		 ConfigResponse response=null;
 		try {
-			response=new ConfigResponse();
+			responseList=new ArrayList<ConfigResponse>();
 			if(ConfigUtil.isValidInputData(appCode)) {//To Validate whether input has valid path parameters or not
 				List<Config> result=configService.getConfig(appCode);
 				if(result!=null && result.size()>0) {
-					result.parallelStream().forEach(action->{
-						logger.info(action.getAppCode());
-						logger.info(action.getVersion());
-						logger.info(action.getContent());
-					});
-				}
-				else {
-					response.setStatus(HttpStatus.OK.toString());
-					response.setError(MessageContants.NO_RESULT_FOUND);
-					
+					for(Config action:result){
+						ConfigResponse configResponse=new ConfigResponse(action.getAppCode(),action.getVersion(),action.getContent(),String.valueOf(action.getLastModifiedDates()));
+						responseList.add(configResponse);
+					}
+					response=new ConfigResponse();
+					response.setConfigResponseList(responseList);
 				}
 				
 			}
-			else {
-				response.setStatus(HttpStatus.BAD_REQUEST.toString());
-				response.setError(MessageContants.INPUTS_MISSING);
-			}
 		}
 		catch(Exception exception) {
-			logger.error("Exception occurred in ConfigController:getConfig:",exception.getCause());
-			response=new ConfigResponse();
-			response.setError(ExceptionMessage.UNABLE_TO_GET.exceptionMessage());
-			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.name());
-			return ConfigUtil.buildErrorResponse(response);
+			logger.error("Exception occurred in ConfigController:getConfigAll:",exception.getCause());
+			throw new ApiException("UnableToGetAllResultsException occurred.");
 		}
 		logger.info("getConfigAll ended.");
 		return ConfigUtil.buildResponse(response);
