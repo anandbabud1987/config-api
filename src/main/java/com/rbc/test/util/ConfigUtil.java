@@ -28,4 +28,9 @@ public class ConfigUtil {
 		return (appCode!=null && version!=null);
 	}
 
+	public static boolean isValidInputData(String appCode) {
+		
+		return (appCode!=null);
+	}
+
 }
